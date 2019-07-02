@@ -18,8 +18,13 @@ from django.core.files.storage import default_storage
 from django.urls import reverse, resolve, NoReverseMatch
 from django.db.models import Model
 from django.template import Node, Template, TemplateSyntaxError
-from django.template.base import (TOKEN_BLOCK, TOKEN_COMMENT,
-                                  TOKEN_TEXT, TOKEN_VAR, TextNode)
+
+# Django 1.11
+#from django.template.base import (TOKEN_BLOCK, TOKEN_COMMENT,
+#                                  TOKEN_TEXT, TOKEN_VAR, TextNode)
+# Django 2.2
+from django.template.base import TokenType, TextNode
+
 from django.template.defaultfilters import escape
 from django.template.loader import get_template
 from django.utils import translation
@@ -71,23 +76,45 @@ def initialize_nevercache():
             in ``mezzanine.core.middleware.UpdateCacheMiddleware``.
             This is to bypass caching for the enclosed code and content.
             """
+
+            # Django 1.11
+            # text = []
+            # end_tag = "endnevercache"
+            # tag_mapping = {
+            #     TOKEN_TEXT: ("", ""),
+            #     TOKEN_VAR: ("{{", "}}"),
+            #     TOKEN_BLOCK: ("{%", "%}"),
+            #     TOKEN_COMMENT: ("{#", "#}"),
+            # }
+            # delimiter = nevercache_token()
+            # while parser.tokens:
+            #     token = parser.next_token()
+            #     token_type = token.token_type
+            #     if token_type == TOKEN_BLOCK and token.contents == end_tag:
+            #         return TextNode(delimiter + "".join(text) + delimiter)
+            #     start, end = tag_mapping[token_type]
+            #     text.append("%s%s%s" % (start, token.contents, end))
+            # parser.unclosed_block_tag(end_tag)
+
+            # Django 2.2
             text = []
             end_tag = "endnevercache"
             tag_mapping = {
-                TOKEN_TEXT: ("", ""),
-                TOKEN_VAR: ("{{", "}}"),
-                TOKEN_BLOCK: ("{%", "%}"),
-                TOKEN_COMMENT: ("{#", "#}"),
+                TokenType.TEXT: ("", ""),
+                TokenType.VAR: ("{{", "}}"),
+                TokenType.BLOCK: ("{%", "%}"),
+                TokenType.COMMENT: ("{#", "#}"),
             }
             delimiter = nevercache_token()
             while parser.tokens:
                 token = parser.next_token()
                 token_type = token.token_type
-                if token_type == TOKEN_BLOCK and token.contents == end_tag:
+                if token_type == TokenType.BLOCK and token.contents == end_tag:
                     return TextNode(delimiter + "".join(text) + delimiter)
                 start, end = tag_mapping[token_type]
                 text.append("%s%s%s" % (start, token.contents, end))
             parser.unclosed_block_tag(end_tag)
+
     else:
         @register.to_end_tag
         def nevercache(parsed, context, token):
@@ -167,12 +194,16 @@ def ifinstalled(parser, token):
                                   "{% ifinstalled app_name %}"
                                   "{% endifinstalled %}")
 
+
     end_tag = "end" + tag
     unmatched_end_tag = 1
     if app.strip("\"'") not in settings.INSTALLED_APPS:
         while unmatched_end_tag:
             token = parser.tokens.pop(0)
-            if token.token_type == TOKEN_BLOCK:
+            # Django 1.11
+            #if token.token_type == TOKEN_BLOCK:
+            # Django 2.2
+            if token.token_type == TokenType.BLOCK:
                 block_name = token.contents.split()[0]
                 if block_name == tag:
                     unmatched_end_tag += 1
