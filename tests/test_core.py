@@ -601,6 +601,16 @@ class SiteRelatedTestCase(TestCase):
             self.assertEqual(current_site_id(), 2)
         self.assertEqual(current_site_id(), 1)
 
+    def test_nested_override_site_id(self):
+        self.assertEqual(current_site_id(), 1)
+        with override_current_site_id(2):
+            self.assertEqual(current_site_id(), 2)
+            with self.assertRaises(RecursionError):
+                with override_current_site_id(3):
+                    self.assertEqual(current_site_id(), 3)
+                self.assertEqual(current_site_id(), 2)
+        self.assertEqual(current_site_id(), 1)
+
 
 class CSRFTestViews:
     def nevercache_view(request):
