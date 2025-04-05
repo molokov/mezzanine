@@ -46,9 +46,14 @@ jobs:
             python-version: "3.10"
           - tox-env: "py311-dj50"
             python-version: "3.11"
+          # Django 5.1
+          - tox-env: "py310-dj51"
+            python-version: "3.10"
+          - tox-env: "py311-dj51"
+            python-version: "3.11"
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
@@ -64,8 +69,8 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.9
       - name: Install dependencies
@@ -80,12 +85,12 @@ jobs:
     needs: [test, lint]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.9
-      - uses: actions/setup-node@v3
-      - uses: cycjimmy/semantic-release-action@v3
+      - uses: actions/setup-node@v4
+      - uses: cycjimmy/semantic-release-action@v4
         with:
           semantic_version: 18
           extra_plugins: |
@@ -95,16 +100,16 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
 
-  # Build and deploy docs  
+  # Build and deploy docs
   docs:
     if: github.ref == 'refs/heads/stable'
     needs: release
     name: build and deploy docs
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 
-        uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.9
       - name: Install deps
