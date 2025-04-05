@@ -110,7 +110,7 @@ def escape(html):
         strip=True,
         strip_comments=False,
         css_sanitizer=css_sanitizer,
-        protocols=list(ALLOWED_PROTOCOLS) + ["tel"],
+        protocols=ALLOWED_PROTOCOLS.union(["tel"]),
     )
 
 

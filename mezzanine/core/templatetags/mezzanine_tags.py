@@ -48,7 +48,7 @@ if "compressor" in settings.INSTALLED_APPS:
         loaded from ``mezzanine_tags``, allowing us to provide
         a dummy version when django-compressor isn't installed.
         """
-        from compressor.templatetags.compress import compress
+        from compressor.templatetags.compress import compress  # type: ignore
 
         return compress(parser, token)
 
@@ -675,13 +675,14 @@ def admin_app_list(request):
             }
         )
 
-    app_list = list(app_dict.values())
-    sort = lambda x: (x["index"] if x["index"] is not None else 999, x["name"])
-    for app in app_list:
-        app["models"].sort(key=sort)
-    app_list.sort(key=sort)
-    return app_list
+    def sort_key(x):
+        return (x["index"] if x["index"] is not None else 999, x["name"])
 
+    app_list = list(app_dict.values())
+    for app in app_list:
+        app["models"].sort(key=sort_key)
+    app_list.sort(key=sort_key)
+    return app_list
 
 @register.inclusion_tag("admin/includes/dropdown_menu.html", takes_context=True)
 def admin_dropdown_menu(context):
