@@ -1,7 +1,6 @@
+import re
 from html.entities import name2codepoint
 from html.parser import HTMLParser
-
-import re
 
 from mezzanine.utils.deprecation import mark_safe
 

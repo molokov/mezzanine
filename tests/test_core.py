@@ -1,9 +1,9 @@
 import re
 import subprocess
+from importlib.metadata import requires
 from unittest import skipUnless
 from urllib.parse import urlencode
 
-import pkg_resources
 import pytest
 import pytz
 from django.contrib.admin import AdminSite
@@ -24,6 +24,7 @@ from django.urls import re_path, reverse
 from django.utils.encoding import force_str
 from django.utils.html import strip_tags
 from django.utils.timezone import datetime, now, timedelta
+from requirements import parse
 
 from mezzanine.conf import settings
 from mezzanine.core.admin import BaseDynamicInlineAdmin
@@ -67,7 +68,9 @@ def test_stable_dependencies():
     """
     # If a requirement is listed via a git or http url the `specs` attribute will be an
     # empty list, so we use it to check for "pre-release" status
-    requirements = pkg_resources.working_set.by_key["mezzanine"].requires()
+    requirements = [
+        list(parse(r))[0] for r in requires("mezzanine") if "extra == " not in r
+    ]
     prereleases = [r.name for r in requirements if not r.specs]
     assert not prereleases, VERSION_WARN.format(", ".join(prereleases))
 
