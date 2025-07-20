@@ -14,6 +14,7 @@ from django.shortcuts import redirect
 from django.template.loader import get_template
 from django.template.response import TemplateResponse
 from django.urls import reverse
+from django.utils.html import escape
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import requires_csrf_token
 
@@ -175,7 +176,7 @@ def displayable_links_js(request):
     # case of Page subclasses, we just use "Page", and then sort the items
     # by whether they're a Page subclass or not, then by their URL.
     for url, obj in Displayable.objects.url_map(for_user=request.user).items():
-        title = getattr(obj, "titles", obj.title)
+        title = escape(getattr(obj, "titles", obj.title))
         real = hasattr(obj, "id")
         page = is_page(obj)
         if real:
