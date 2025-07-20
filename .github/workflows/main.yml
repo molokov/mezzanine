@@ -14,6 +14,28 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # Django 2.2
+          - tox-env: "py38-dj22"
+            python-version: "3.8"
+          - tox-env: "py39-dj22"
+            python-version: "3.9"
+          # Django 3.0
+          - tox-env: "py38-dj30"
+            python-version: "3.8"
+          - tox-env: "py39-dj30"
+            python-version: "3.9"
+          # Django 3.1
+          - tox-env: "py38-dj31"
+            python-version: "3.8"
+          - tox-env: "py39-dj31"
+            python-version: "3.9"
+          # Django 3.2
+          - tox-env: "py38-dj32"
+            python-version: "3.8"
+          - tox-env: "py39-dj32"
+            python-version: "3.9"
+          - tox-env: "py310-dj32"
+            python-version: "3.10"
           # Django 4.0
           - tox-env: "py38-dj40"
             python-version: "3.8"
