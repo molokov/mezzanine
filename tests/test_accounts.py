@@ -83,7 +83,7 @@ class AccountsTests(TestCase):
 
         self.client.logout()
 
-        if django.VERSION[0:1] >= (4, 1):
+        if django.VERSION[:2] >= (4, 1):
             # This form of assertFormError is only available since Django 4.1
 
             # Create another account with the same user name
